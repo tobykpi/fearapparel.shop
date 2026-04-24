@@ -41,7 +41,14 @@
           </svg>
         </button>
 
-        <button class="icon-button bag-button" type="button" aria-label="Shopping bag with 0 items">
+        <button
+          class="icon-button bag-button"
+          type="button"
+          aria-label="Shopping bag with 0 items"
+          aria-haspopup="dialog"
+          aria-controls="bagDrawer"
+          aria-expanded="false"
+        >
           <svg viewBox="0 0 32 32" aria-hidden="true">
             <path d="M9.75 12.25h12.5l1.25 12H8.5l1.25-12ZM12.75 12.25v-2a3.25 3.25 0 0 1 6.5 0v2" />
           </svg>
@@ -119,6 +126,16 @@
         <div class="product-card__details">
           <h3>Born From Pain Tee / White</h3>
           <span class="product-card__meta">$50.00 USD</span>
+          <button
+            class="product-card__action preorder-launch"
+            type="button"
+            data-product="Born From Pain Tee / White"
+            data-price="$50.00 USD"
+            aria-haspopup="dialog"
+            aria-controls="preorderModal"
+          >
+            PRE-ORDER
+          </button>
         </div>
       </article>
 
@@ -129,6 +146,16 @@
         <div class="product-card__details">
           <h3>Born From Pain Tee / Black</h3>
           <span class="product-card__meta">$50.00 USD</span>
+          <button
+            class="product-card__action preorder-launch"
+            type="button"
+            data-product="Born From Pain Tee / Black"
+            data-price="$50.00 USD"
+            aria-haspopup="dialog"
+            aria-controls="preorderModal"
+          >
+            PRE-ORDER
+          </button>
         </div>
       </article>
     </div>
@@ -161,9 +188,52 @@
   </section>
 
   <footer class="site-footer">
-    <p>FEAR</p>
-    <a href="#top">Back to top</a>
+    <div class="site-footer__inner">
+      <p class="site-footer__brand">FEAR</p>
+      <p class="site-footer__legal">&copy; 2026 FEAR. All Rights Reserved.</p>
+      <div class="site-footer__links">
+        <a href="https://instagram.com/fearapparel_" target="_blank" rel="noreferrer">Instagram</a>
+        <a href="#top">Back to top</a>
+      </div>
+    </div>
   </footer>
+
+  <div
+    class="bag-drawer"
+    id="bagDrawer"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="bagTitle"
+    aria-hidden="true"
+  >
+    <div class="bag-drawer__backdrop"></div>
+    <aside class="bag-drawer__panel">
+      <div class="bag-drawer__header">
+        <div>
+          <p class="section-heading__kicker">YOUR BAG</p>
+          <h2 id="bagTitle">Pre-orders</h2>
+        </div>
+        <button class="bag-drawer__close" type="button" aria-label="Close bag">
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+
+      <div class="bag-drawer__items" aria-live="polite"></div>
+
+      <div class="bag-drawer__footer">
+        <div class="bag-drawer__metric">
+          <span>Items</span>
+          <strong class="bag-summary-count">0 items</strong>
+        </div>
+        <div class="bag-drawer__metric">
+          <span>Estimated total</span>
+          <strong class="bag-summary-total">$0.00 USD</strong>
+        </div>
+        <button class="bag-drawer__clear" type="button">CLEAR BAG</button>
+      </div>
+    </aside>
+  </div>
 
   <div
     class="signup-modal"
@@ -187,6 +257,102 @@
         <button type="submit">JOIN</button>
       </form>
       <p class="newsletter-form__status" aria-live="polite"></p>
+    </div>
+  </div>
+
+  <div
+    class="preorder-modal"
+    id="preorderModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="preorderTitle"
+    aria-hidden="true"
+  >
+    <div class="preorder-modal__backdrop"></div>
+    <div class="newsletter__panel preorder-modal__panel">
+      <button class="preorder-modal__close" type="button" aria-label="Close pre-order">
+        <span></span>
+        <span></span>
+      </button>
+      <p class="section-heading__kicker">PRE-ORDER</p>
+      <h2 id="preorderTitle">Reserve your piece before the drop closes.</h2>
+      <div class="preorder-summary" aria-live="polite">
+        <span class="preorder-summary__label">Selected piece</span>
+        <strong class="preorder-product-name">Born From Pain Tee / White</strong>
+        <span class="preorder-product-price">$50.00 USD</span>
+      </div>
+      <p class="preorder-note">No charge yet. We&apos;ll reach out before the pre-order window closes.</p>
+      <form
+        class="preorder-form"
+        method="POST"
+        data-submit-endpoint="https://formsubmit.co/ajax/Fearapparel2025@gmail.com"
+      >
+        <input type="hidden" name="product" value="Born From Pain Tee / White" />
+        <input type="hidden" name="price" value="$50.00 USD" />
+        <input type="hidden" name="_subject" value="New FEAR pre-order" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="submitted_at_eastern" value="" />
+        <input type="text" name="_honey" class="sr-only" tabindex="-1" autocomplete="off" />
+        <div class="preorder-form__row">
+          <label class="sr-only" for="preorderFirstName">First name</label>
+          <input
+            id="preorderFirstName"
+            name="first_name"
+            type="text"
+            placeholder="First name"
+            autocomplete="given-name"
+            required
+          />
+
+          <label class="sr-only" for="preorderLastName">Last name</label>
+          <input
+            id="preorderLastName"
+            name="last_name"
+            type="text"
+            placeholder="Last name"
+            autocomplete="family-name"
+            required
+          />
+        </div>
+        <div class="preorder-form__row">
+          <label class="sr-only" for="preorderSize">Size</label>
+          <select id="preorderSize" name="size" required>
+            <option value="">Choose size</option>
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+            <option value="XXL">XXL</option>
+          </select>
+
+          <label class="sr-only" for="preorderQuantity">Quantity</label>
+          <select id="preorderQuantity" name="quantity">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </div>
+        <label class="sr-only" for="preorderEmail">Email address</label>
+        <input
+          id="preorderEmail"
+          name="email"
+          type="email"
+          placeholder="Email address"
+          autocomplete="email"
+          required
+        />
+        <label class="sr-only" for="preorderPhone">Phone number</label>
+        <input
+          id="preorderPhone"
+          name="phone"
+          type="tel"
+          placeholder="Phone number (optional)"
+          autocomplete="tel"
+        />
+        <button type="submit">SEND PRE-ORDER</button>
+      </form>
+      <p class="preorder-form__status" aria-live="polite"></p>
     </div>
   </div>
 
