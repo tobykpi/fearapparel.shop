@@ -35,7 +35,11 @@
       </button>
 
       <div class="header-actions">
-        <button class="icon-button" type="button" aria-label="Profile">
+        <button
+          class="icon-button profile-button"
+          type="button"
+          aria-label="Profile"
+        >
           <svg viewBox="0 0 32 32" aria-hidden="true">
             <path d="M16 15.25a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM8 24.75c0-4.42 3.58-8 8-8s8 3.58 8 8" />
           </svg>
@@ -44,15 +48,12 @@
         <button
           class="icon-button bag-button"
           type="button"
-          aria-label="Shopping bag with 0 items"
-          aria-haspopup="dialog"
-          aria-controls="bagDrawer"
-          aria-expanded="false"
+          aria-label="View shopping cart on Shopify"
         >
           <svg viewBox="0 0 32 32" aria-hidden="true">
             <path d="M9.75 12.25h12.5l1.25 12H8.5l1.25-12ZM12.75 12.25v-2a3.25 3.25 0 0 1 6.5 0v2" />
           </svg>
-          <span class="bag-button__count">(0)</span>
+          <span class="bag-button__count"></span>
         </button>
       </div>
     </header>
@@ -120,42 +121,44 @@
 
     <div class="product-grid product-grid--arrivals">
       <article class="product-card product-card--arrival">
-        <div class="product-card__media">
+        <a
+          class="product-card__media"
+          href="https://fearapparel0.myshopify.com/products/born-from-pain-t-shirt"
+          aria-label="View Born From Pain Tee / White on Shopify"
+        >
           <img src="assets/fear-shirt-1.png" alt="White FEAR Born From Pain graphic tee" />
-        </div>
+        </a>
         <div class="product-card__details">
           <h3>Born From Pain Tee / White</h3>
           <span class="product-card__meta">$50.00 USD</span>
-          <button
-            class="product-card__action preorder-launch"
-            type="button"
-            data-product="Born From Pain Tee / White"
-            data-price="$50.00 USD"
-            aria-haspopup="dialog"
-            aria-controls="preorderModal"
+          <a
+            class="product-card__action"
+            href="https://fearapparel0.myshopify.com/products/born-from-pain-t-shirt"
+            aria-label="Shop Born From Pain Tee / White on Shopify"
           >
-            PRE-ORDER
-          </button>
+            SHOP NOW
+          </a>
         </div>
       </article>
 
       <article class="product-card product-card--arrival">
-        <div class="product-card__media">
+        <a
+          class="product-card__media"
+          href="https://fearapparel0.myshopify.com/products/born-from-pain-t-shirt-1"
+          aria-label="View Born From Pain Tee / Black on Shopify"
+        >
           <img src="assets/fear-shirt-2.png" alt="Black FEAR Born From Pain graphic tee" />
-        </div>
+        </a>
         <div class="product-card__details">
           <h3>Born From Pain Tee / Black</h3>
           <span class="product-card__meta">$50.00 USD</span>
-          <button
-            class="product-card__action preorder-launch"
-            type="button"
-            data-product="Born From Pain Tee / Black"
-            data-price="$50.00 USD"
-            aria-haspopup="dialog"
-            aria-controls="preorderModal"
+          <a
+            class="product-card__action"
+            href="https://fearapparel0.myshopify.com/products/born-from-pain-t-shirt-1"
+            aria-label="Shop Born From Pain Tee / Black on Shopify"
           >
-            PRE-ORDER
-          </button>
+            SHOP NOW
+          </a>
         </div>
       </article>
     </div>
@@ -197,6 +200,51 @@
       </div>
     </div>
   </footer>
+
+  <div
+    class="account-modal"
+    id="accountModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="accountTitle"
+    aria-hidden="true"
+  >
+    <div class="account-modal__backdrop"></div>
+    <div class="account-modal__panel">
+      <button class="account-modal__close" type="button" aria-label="Close account sign in">
+        <span></span>
+        <span></span>
+      </button>
+      <p class="account-modal__brand">FEAR</p>
+      <h2 id="accountTitle">Sign in</h2>
+      <p class="account-modal__intro">Secure sign-in continues on Shopify.</p>
+      <button
+        class="account-modal__shop"
+        type="button"
+        data-shop-url="https://fearapparel0.myshopify.com/account/login"
+      >
+        Continue with Shop
+      </button>
+      <div class="account-modal__divider" aria-hidden="true">
+        <span></span>
+        <strong>or</strong>
+        <span></span>
+      </div>
+      <form class="account-form">
+        <label class="sr-only" for="accountEmail">Email address</label>
+        <input
+          id="accountEmail"
+          name="email"
+          type="email"
+          placeholder="Email"
+          autocomplete="email"
+          required
+        />
+        <button type="submit">Continue on Shopify</button>
+      </form>
+      <p class="account-form__status" aria-live="polite"></p>
+    </div>
+  </div>
 
   <div
     class="bag-drawer"
@@ -322,7 +370,6 @@
             <option value="M">M</option>
             <option value="L">L</option>
             <option value="XL">XL</option>
-            <option value="XXL">XXL</option>
           </select>
 
           <label class="sr-only" for="preorderQuantity">Quantity</label>
