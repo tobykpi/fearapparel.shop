@@ -1,6 +1,7 @@
 const app = document.querySelector(".app");
 const menuToggle = document.querySelector(".menu-toggle");
 const navPanel = document.querySelector(".nav-panel");
+const profileButton = document.querySelector(".profile-button");
 const bagButton = document.querySelector(".bag-button");
 const bagCount = document.querySelector(".bag-button__count");
 const bagDrawer = document.querySelector(".bag-drawer");
@@ -13,6 +14,12 @@ const bagClear = document.querySelector(".bag-drawer__clear");
 const motionToggle = document.querySelector(".motion-toggle");
 const siteAudio = document.querySelector(".site-audio");
 const navLinks = [...document.querySelectorAll(".nav-panel a")];
+const accountModal = document.querySelector(".account-modal");
+const accountBackdrop = document.querySelector(".account-modal__backdrop");
+const accountClose = document.querySelector(".account-modal__close");
+const accountShopButton = document.querySelector(".account-modal__shop");
+const accountForm = document.querySelector(".account-form");
+const accountStatus = document.querySelector(".account-form__status");
 const signupLaunch = document.querySelector(".signup-launch");
 const signupModal = document.querySelector(".signup-modal");
 const signupBackdrop = document.querySelector(".signup-modal__backdrop");
@@ -31,6 +38,9 @@ const preorderSubmitButton = preorderForm?.querySelector('button[type="submit"]'
 const rootStyle = document.documentElement.style;
 const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const preorderStorageKey = "fear-preorders";
+const shopifyStoreUrl = "https://fearapparel0.myshopify.com";
+const shopifyAccountUrl = "https://fearapparel0.myshopify.com/account/login";
+const shopifyCartUrl = `${shopifyStoreUrl}/cart`;
 let lastFocusedElement = null;
 let audioContext = null;
 let audioSource = null;
@@ -186,23 +196,63 @@ const submitPreorderEmail = async (form) => {
   }
 };
 
-const updateBagCount = () => {
-  const orders = getStoredPreorders();
-  const orderCount = orders.reduce((total, order) => {
-    const quantity = Number(order?.quantity);
-    return total + (Number.isFinite(quantity) && quantity > 0 ? quantity : 1);
-  }, 0);
+const openShopifyAccount = () => {
+  window.location.href = shopifyAccountUrl;
+};
 
+const openShopifyCart = () => {
+  window.location.href = shopifyCartUrl;
+};
+
+const getShopifyCartCountUrl = () => {
+  const shopifyRoot = window.Shopify?.routes?.root;
+
+  if (typeof shopifyRoot === "string" && shopifyRoot.startsWith("/")) {
+    return `${shopifyRoot}cart.js`;
+  }
+
+  if (window.location.hostname === new URL(shopifyStoreUrl).hostname) {
+    return `${window.location.origin}/cart.js`;
+  }
+
+  return `${shopifyStoreUrl}/cart.js`;
+};
+
+const setBagCountState = (count = null) => {
   if (bagCount) {
-    bagCount.textContent = `(${orderCount})`;
+    bagCount.textContent = Number.isInteger(count) && count >= 0 ? `(${count})` : "";
   }
 
   if (bagButton) {
-    const orderLabel = orderCount === 1 ? "item" : "items";
-    bagButton.setAttribute("aria-label", `Shopping bag with ${orderCount} ${orderLabel}`);
-  }
+    if (Number.isInteger(count) && count >= 0) {
+      const itemLabel = count === 1 ? "item" : "items";
+      bagButton.setAttribute("aria-label", `View shopping cart on Shopify with ${count} ${itemLabel}`);
+      return;
+    }
 
-  renderBag();
+    bagButton.setAttribute("aria-label", "View shopping cart on Shopify");
+  }
+};
+
+const updateBagCount = async () => {
+  try {
+    const response = await fetch(getShopifyCartCountUrl(), {
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Unable to load Shopify cart (${response.status})`);
+    }
+
+    const cart = await response.json();
+    const itemCount = Number(cart?.item_count);
+    setBagCountState(Number.isFinite(itemCount) && itemCount >= 0 ? itemCount : 0);
+  } catch (error) {
+    setBagCountState(null);
+  }
 };
 
 const setPreorderProduct = (product, price) => {
@@ -295,6 +345,53 @@ const renderBag = () => {
   }
 };
 
+const updateProfileState = () => {
+  if (!profileButton) {
+    return;
+  }
+
+  profileButton.setAttribute("aria-label", "Profile");
+};
+
+const setAccountState = (open, options = {}) => {
+  const { restoreFocus = true } = options;
+
+  if (!accountModal) {
+    return;
+  }
+
+  document.body.classList.toggle("account-open", open);
+  accountModal.setAttribute("aria-hidden", String(!open));
+  profileButton?.setAttribute("aria-expanded", String(open));
+
+  if (open) {
+    setBagState(false, { restoreFocus: false });
+    setSignupState(false, { restoreFocus: false });
+    setPreorderState(false, null, { restoreFocus: false });
+    setNavigationState(false);
+    lastFocusedElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    if (accountStatus) {
+      accountStatus.textContent = "";
+    }
+
+    window.setTimeout(() => {
+      const emailInput = accountForm?.elements.namedItem("email");
+
+      if (emailInput instanceof HTMLInputElement) {
+        emailInput.value = "";
+        emailInput.focus();
+      }
+    }, 20);
+
+    return;
+  }
+
+  if (restoreFocus) {
+    lastFocusedElement?.focus();
+  }
+};
+
 const setBagState = (open, options = {}) => {
   const { restoreFocus = true } = options;
 
@@ -307,6 +404,7 @@ const setBagState = (open, options = {}) => {
   bagButton?.setAttribute("aria-expanded", String(open));
 
   if (open) {
+    setAccountState(false, { restoreFocus: false });
     setSignupState(false, { restoreFocus: false });
     setPreorderState(false, null, { restoreFocus: false });
     setNavigationState(false);
@@ -343,6 +441,7 @@ const setSignupState = (open, options = {}) => {
   signupModal.setAttribute("aria-hidden", String(!open));
 
   if (open) {
+    setAccountState(false, { restoreFocus: false });
     setBagState(false, { restoreFocus: false });
     setPreorderState(false, null, { restoreFocus: false });
     setNavigationState(false);
@@ -380,6 +479,7 @@ const setPreorderState = (open, productData = null, options = {}) => {
   preorderModal.setAttribute("aria-hidden", String(!open));
 
   if (open) {
+    setAccountState(false, { restoreFocus: false });
     setBagState(false, { restoreFocus: false });
     setSignupState(false, { restoreFocus: false });
     setNavigationState(false);
@@ -540,14 +640,45 @@ const queueAudioStart = () => {
 };
 
 bindAudioUnlock();
+updateProfileState();
 updateBagCount();
 
 menuToggle.addEventListener("click", () => {
   setNavigationState(app.dataset.navOpen !== "true");
 });
 
+profileButton?.addEventListener("click", () => {
+  openShopifyAccount();
+});
+
+accountBackdrop?.addEventListener("click", () => {
+  setAccountState(false);
+});
+
+accountClose?.addEventListener("click", () => {
+  setAccountState(false);
+});
+
+accountShopButton?.addEventListener("click", () => {
+  const shopUrl = accountShopButton.dataset.shopUrl?.trim() ?? "";
+
+  if (!accountStatus) {
+    window.location.href = shopUrl || shopifyAccountUrl;
+    return;
+  }
+
+  if (!shopUrl) {
+    accountStatus.textContent = "REDIRECTING TO SHOPIFY SIGN-IN";
+    openShopifyAccount();
+    return;
+  }
+
+  accountStatus.textContent = "REDIRECTING TO SHOPIFY SIGN-IN";
+  window.location.href = shopUrl;
+});
+
 bagButton?.addEventListener("click", () => {
-  setBagState(bagDrawer?.getAttribute("aria-hidden") !== "false");
+  openShopifyCart();
 });
 
 bagBackdrop?.addEventListener("click", () => {
@@ -574,12 +705,12 @@ bagItems?.addEventListener("click", (event) => {
 
   orders.splice(index, 1);
   storePreorders(orders);
-  updateBagCount();
+  void updateBagCount();
 });
 
 bagClear?.addEventListener("click", () => {
   storePreorders([]);
-  updateBagCount();
+  void updateBagCount();
 });
 
 motionToggle.addEventListener("click", async () => {
@@ -645,6 +776,11 @@ document.addEventListener("click", (event) => {
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
+    if (accountModal?.getAttribute("aria-hidden") === "false") {
+      setAccountState(false);
+      return;
+    }
+
     if (bagDrawer?.getAttribute("aria-hidden") === "false") {
       setBagState(false);
       return;
@@ -701,9 +837,16 @@ siteAudio?.addEventListener("pause", () => {
 siteAudio?.addEventListener("canplay", queueAudioStart, { once: true });
 window.addEventListener("load", queueAudioStart, { once: true });
 window.addEventListener("pageshow", queueAudioStart);
+window.addEventListener("pageshow", () => {
+  void updateBagCount();
+});
+window.addEventListener("focus", () => {
+  void updateBagCount();
+});
 document.addEventListener("visibilitychange", () => {
   if (document.visibilityState === "visible") {
     queueAudioStart();
+    void updateBagCount();
   }
 });
 
@@ -735,6 +878,32 @@ newsletterForm?.addEventListener("submit", (event) => {
 newsletterForm?.addEventListener("input", () => {
   if (newsletterStatus) {
     newsletterStatus.textContent = "";
+  }
+});
+
+accountForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  if (!accountStatus) {
+    openShopifyAccount();
+    return;
+  }
+
+  const emailInput = accountForm.elements.namedItem("email");
+
+  if (!(emailInput instanceof HTMLInputElement) || !emailInput.value.trim()) {
+    accountStatus.textContent = "ENTER A VALID EMAIL";
+    emailInput?.focus();
+    return;
+  }
+
+  accountStatus.textContent = "CONTINUING TO SHOPIFY SIGN-IN";
+  openShopifyAccount();
+});
+
+accountForm?.addEventListener("input", () => {
+  if (accountStatus) {
+    accountStatus.textContent = "";
   }
 });
 
@@ -820,7 +989,7 @@ preorderForm?.addEventListener("submit", (event) => {
     });
 
     storePreorders(savedOrders);
-    updateBagCount();
+    void updateBagCount();
 
     preorderStatus.textContent = submissionResult.ok
       ? `${reservedQuantity} RESERVED`
