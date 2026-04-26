@@ -237,6 +237,10 @@ button {
   letter-spacing: 0.06em;
 }
 
+.bag-button__count:empty {
+  display: none;
+}
+
 .logo-stage {
   position: fixed;
   top: 0.85rem;
@@ -493,7 +497,8 @@ button {
 
 body.signup-open,
 body.preorder-open,
-body.bag-open {
+body.bag-open,
+body.account-open {
   overflow: hidden;
 }
 
@@ -508,7 +513,11 @@ body.preorder-open .site-footer,
 body.bag-open .app,
 body.bag-open .collection,
 body.bag-open .studio,
-body.bag-open .site-footer {
+body.bag-open .site-footer,
+body.account-open .app,
+body.account-open .collection,
+body.account-open .studio,
+body.account-open .site-footer {
   filter: blur(16px) saturate(0.8);
 }
 
@@ -995,6 +1004,203 @@ body.bag-open .site-footer {
   width: 100%;
 }
 
+.account-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 16;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 220ms ease,
+    visibility 220ms ease;
+}
+
+.account-modal[aria-hidden="false"] {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.account-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(243, 243, 247, 0.22);
+  backdrop-filter: blur(18px);
+}
+
+.account-modal__panel {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 35rem);
+  padding: 2.9rem 2rem 1.8rem;
+  border-radius: 1.4rem;
+  background: #ffffff;
+  box-shadow: 0 28px 90px rgba(8, 10, 14, 0.2);
+  color: #07080c;
+}
+
+.account-modal__close {
+  position: absolute;
+  top: 0.9rem;
+  right: 0.9rem;
+  width: 2.45rem;
+  height: 2.45rem;
+  border: 1px solid rgba(7, 8, 12, 0.1);
+  border-radius: 999px;
+  background: rgba(7, 8, 12, 0.02);
+  color: #07080c;
+  cursor: pointer;
+}
+
+.account-modal__close span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.92rem;
+  height: 1px;
+  background: currentColor;
+}
+
+.account-modal__close span:first-child {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.account-modal__close span:last-child {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.account-modal__brand {
+  margin: 0 0 2rem;
+  text-align: center;
+  color: #090b11;
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: clamp(1.7rem, 2vw, 2.1rem);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.account-modal h2 {
+  margin: 0 0 0.45rem;
+  color: #090b11;
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: clamp(2.1rem, 4vw, 3rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.account-modal__intro {
+  margin: 0 0 1.5rem;
+  color: rgba(9, 11, 17, 0.6);
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.account-modal__shop {
+  width: 100%;
+  min-height: 3.9rem;
+  border: 0;
+  border-radius: 0.9rem;
+  background: linear-gradient(135deg, #5f36ff 0%, #4e2ce2 100%);
+  color: #ffffff;
+  cursor: pointer;
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: 1.02rem;
+  font-weight: 700;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.account-modal__shop:hover,
+.account-modal__shop:focus-visible {
+  outline: none;
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(88, 54, 255, 0.24);
+}
+
+.account-modal__divider {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.85rem;
+  margin: 1.5rem 0 1.2rem;
+  color: rgba(9, 11, 17, 0.48);
+  font-family: "Arial Narrow", Arial, sans-serif;
+}
+
+.account-modal__divider span {
+  height: 1px;
+  background: rgba(9, 11, 17, 0.12);
+}
+
+.account-modal__divider strong {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.account-form {
+  display: grid;
+  gap: 1rem;
+}
+
+.account-form input,
+.account-form button {
+  width: 100%;
+  min-height: 3.85rem;
+  border-radius: 0.9rem;
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: 1rem;
+}
+
+.account-form input {
+  border: 1px solid rgba(9, 11, 17, 0.16);
+  background: #ffffff;
+  color: #090b11;
+  padding: 0 1rem;
+}
+
+.account-form input::placeholder {
+  color: rgba(9, 11, 17, 0.52);
+}
+
+.account-form input:focus-visible {
+  outline: 2px solid rgba(95, 54, 255, 0.2);
+  border-color: rgba(95, 54, 255, 0.52);
+}
+
+.account-form button {
+  border: 0;
+  background: #090b11;
+  color: #ffffff;
+  cursor: pointer;
+  font-weight: 700;
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.account-form button:hover,
+.account-form button:focus-visible {
+  outline: none;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 24px rgba(9, 11, 17, 0.16);
+}
+
+.account-form__status {
+  min-height: 1.2rem;
+  margin: 0.9rem 0 0;
+  color: rgba(9, 11, 17, 0.64);
+  font-family: "Arial Narrow", Arial, sans-serif;
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
 .site-footer {
   padding: 2.4rem 1.5rem 2.8rem;
   background: #0a0a0a;
@@ -1457,6 +1663,15 @@ body.bag-open .site-footer {
 
   .site-footer {
     padding-inline: 1rem;
+  }
+
+  .account-modal__panel {
+    padding: 2.6rem 1.15rem 1.3rem;
+    border-radius: 1rem;
+  }
+
+  .account-modal__brand {
+    margin-bottom: 1.7rem;
   }
 
   .site-footer__brand {
